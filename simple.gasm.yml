@@ -1,0 +1,5 @@
+asm:
+  instructions:
+    load a1, <x>: <0011xxxx>
+    load <x>    : <0001xxxx>
+    nop         : <10000000>

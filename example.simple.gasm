@@ -1,0 +1,5 @@
+load 1
+load 0x3
+load a1, 1
+load a1, 5
+nop
