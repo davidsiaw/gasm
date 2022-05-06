@@ -1,3 +1,5 @@
+; this is a simple gasm file made up to test gasm
+
 load 1
 load 0x3
 load a1, 1

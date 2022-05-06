@@ -68,10 +68,13 @@ Supported number formats are:
 - decimal: `123`
 - hexadecimal: `0xab`
 
+## Comments
+
+Start lines with a `;` to write comments
+
 TODO
 ----
 
-- implement comments
 - maybe clean up somehow the state machine into something more readable
 - implement labels like `main:` and be able to use that name as a number referring to an offset (might need instruction to specify how big it is or infer)
 - implement common directives like `.start` or `.data` or to maybe say how far down the file it should be written??

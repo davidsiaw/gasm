@@ -1,0 +1,47 @@
+# CHIP8 instruction set
+# Every instruction is 16 bits long
+asm:
+  instructions:
+    # This is a made-up instruction NOP, that basically does LD V0, V0
+    # it just wastes a cycle and does not do anything
+    nop                 : 1000 0000 0000 0000
+
+    ld V<x>, [I]        : 1111 xxxx 0110 0101 # LD Vx, [I]
+    ld [I], V<x>        : 1111 xxxx 0101 0101 # LD [I], Vx
+    ld B, V<x>          : 1111 xxxx 0011 0011 # LD B, Vx
+    ld F, V<x>          : 1111 xxxx 0010 1001 # LD F, Vx
+    add I, V<x>         : 1111 xxxx 0001 1110 # ADD I, Vx
+    ld ST, V<x>         : 1111 xxxx 0001 1000 # LD ST, Vx
+    ld DT, V<x>         : 1111 xxxx 0001 0101 # LD DT, Vx
+    ld V<x>, K          : 1111 xxxx 0000 1010 # LD Vx, K
+    ld V<x>, DT         : 1111 xxxx 0000 0111 # LD Vx, DT
+    
+    sknp V<x>           : 1110 xxxx 1010 0001 # SKNP Vx
+    skp V<x>            : 1110 xxxx 1001 1110 # SKP Vx
+
+    drw V<x>, V<y>, <n> : 1101 xxxx yyyy nnnn # DRW Vx, Vy, n
+    rnd V<x>, <k>       : 1100 xxxx kkkk kkkk # RND Vx, k; rnd Vx & k
+    jp V0, <n>          : 1011 nnnn nnnn nnnn # JP V0, n; jump n + V0
+    ld I, <n>           : 1010 nnnn nnnn nnnn # LD I, n
+
+    sne V<x>, V<y>      : 1001 xxxx yyyy 0000 # SNE Vx, Vy
+
+    shl V<x>            : 1000 xxxx yyyy 1110 # SHL Vx
+    subn V<x>, V<y>     : 1000 xxxx yyyy 0111 # SUBN Vx, Vy
+    shr V<x>            : 1000 xxxx yyyy 0110 # SHR Vx
+    sub V<x>, V<y>      : 1000 xxxx yyyy 0101 # SUB Vx, Vy
+    add V<x>, V<y>      : 1000 xxxx yyyy 0100 # ADD Vx, Vy
+    xor V<x>, V<y>      : 1000 xxxx yyyy 0011 # XOR Vx, Vy
+    and V<x>, V<y>      : 1000 xxxx yyyy 0010 # AND Vx, Vy
+    or V<x>, V<y>       : 1000 xxxx yyyy 0001 # OR Vx, Vy
+    ld V<x>, V<y>       : 1000 xxxx yyyy 0000 # LD Vx, Vy
+
+    add V<x>, <k>       : 0111 xxxx kkkk kkkk # ADD Vx, k
+    ld V<x>, <k>        : 0110 xxxx kkkk kkkk # LD Vx, k
+    se V<x>, V<y>       : 0101 xxxx yyyy 0000 # SE Vx, Vy
+    sne V<x>, <k>       : 0100 xxxx kkkk kkkk # SNE Vx, k
+    se V<x>, <k>        : 0011 xxxx kkkk kkkk # SE Vx, k
+    call <n>            : 0010 nnnn nnnn nnnn
+    jp <n>              : 0001 nnnn nnnn nnnn
+    ret                 : 0000 0000 1110 1110
+    cls                 : 0000 0000 1110 0000

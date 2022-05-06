@@ -1,0 +1,50 @@
+; not a real Chip8 program, but just to check that all the asm
+; is recognized correctly and the bits are generated correctly.
+
+cls
+ret
+jp 0x123
+call 0x123
+se V1, 0x55
+sne V1, 0x55
+se V2, V1
+ld V1, 0x55
+add V1, 0x55
+
+ld V1, V2
+or V1, V2
+and V1, V2
+xor V1, V2
+add V1, V2
+sub V1, V2
+shr V1
+subn V1, V2
+shl V1
+
+sne V1, V2
+ld I, 0x123
+jp V0, 0x123
+rnd V1, 0x55
+drw V1, V2, 3
+
+skp V1
+sknp V1
+
+ld V1, DT
+ld V1, K
+ld DT, V1
+ld ST, V1
+
+add I, V1
+
+ld F, V1
+ld B, V1
+
+ld [I], V1
+ld V1, [I]
+
+; one of the weird things is if you want to use registers above V9 you need to say V10 instead of Va
+
+ld V10, V1
+
+; maybe i should make a generator that generates input friendly to gasm in this way...?

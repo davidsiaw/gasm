@@ -154,6 +154,9 @@ class Asm
     result = []
 
     lines.each do |line|
+      next if line.strip.start_with?(';') # Skip over comments
+      next if line.strip.length.zero? # Skip empty lines
+
       parsed = @gasm.parse(line.strip)
       result << line
       result << "#{parsed}\n" if parsed
