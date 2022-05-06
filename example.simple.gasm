@@ -2,4 +2,6 @@ load 1
 load 0x3
 load a1, 1
 load a1, 5
+ins 1, 2
 nop
+biginstr 0xbeef, 6, 7

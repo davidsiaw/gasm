@@ -1,5 +1,7 @@
 asm:
   instructions:
-    load a1, <x>: <0011xxxx>
-    load <x>    : <0001xxxx>
-    nop         : <10000000>
+    load a1, <x>: 0011xxxx
+    load <x>    : 0001xxxx
+    nop         : 10000000
+    ins <x>, <y>: 0010xxyy
+    biginstr <x>, <y>, <z>: 0000 xxxx   xxxx xxxx   xxxx yyyy   yyzz zzzz # large 32 bit instruction with 3 variables

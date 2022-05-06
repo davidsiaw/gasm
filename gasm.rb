@@ -86,12 +86,19 @@ class Gasm
     end
 
     # fill in result
+    result = result.to_s.gsub(/\s+/, '')
     idx = result.length - 1
     varidx = 0
 
     lastvar = ' '
     output = ''
     loop do
+
+      if result[idx] == lastvar
+        varidx += 1
+      else
+        varidx = 0
+      end
 
       if values.key? result[idx]
         output = (values[result[idx]][-1 - varidx] || '.') + output
@@ -102,17 +109,33 @@ class Gasm
         output = result[idx] + output
       end
 
-      if result[idx] == lastvar
-        varidx += 1
-      else
-        varidx = 0
-      end
+      #puts "#{values}, #{lastvar} #{varidx}"
 
       idx -= 1
       break if idx < 0
     end
 
-    "#{output}"
+    # split array into groups of 8 bits
+    toks = output.split('').each_slice(8)
+
+    # rejoin the 8 bits in bsm format, and pad the end with zeros
+    toks = toks.map do |x|
+      "#{x.join('').ljust(8, '.')}"
+    end
+    
+    # write down a byte breakdown in both dec and hex
+    comment_line = toks.map{|x| x.tr('.', '0').to_i(2).to_s.ljust(11)}.join('')
+    comment_line2 = toks.map{|x| ("0x" + x.tr('.', '0').to_i(2).to_s(16)).ljust(11)}.join('')
+
+    # generate the line that actually creates the bits
+    command_line = toks.map{|x| "<#{x}>"}.join(' ')
+
+    [
+      "--",
+      " d " + comment_line,
+      " h " + comment_line2,
+      "; " + command_line
+    ].join("\n")
   end
 end
 
@@ -131,7 +154,7 @@ class Asm
     lines.each do |line|
       parsed = @gasm.parse(line.strip)
       result << line
-      result << "; #{parsed}\n" if parsed
+      result << "#{parsed}\n" if parsed
     end
 
     result.join("\n")
