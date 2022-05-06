@@ -166,7 +166,68 @@ class Asm
   end
 end
 
-gasm = Gasm.new(YAML.load_file(asm_desc))
+class OpSection
+  attr_reader :pattern, :bits
+
+  def initialize(ops)
+    @ops = ops
+  end
+
+  def op(pattern, bits)
+    @ops[pattern] = bits
+  end
+end
+
+class InstructionsSection
+  def initialize
+    @ops = {}
+  end
+
+  def inst
+    {
+      'instructions' => @ops
+    }
+  end
+
+  def instructions(&block)
+    op = OpSection.new(@ops)
+    op.instance_eval(&block)
+  end
+end
+
+class RubyDesc
+  attr_reader :desc
+
+  def initialize
+    @desc = {}
+  end
+
+  def asm(&block)
+    insts = InstructionsSection.new
+    insts.instance_eval(&block)
+    @desc['asm'] = insts.inst
+  end
+end
+
+class GasmLoader
+  def initialize(filename)
+    @filename = filename
+  end
+
+  def rubydesc
+    rbdesc = RubyDesc.new
+    rbdesc.instance_eval(File.read(@filename), @filename)
+    rbdesc.desc
+  end
+
+  def desc
+    return YAML.load_file(@filename) if @filename.end_with?('.yml')
+
+    rubydesc
+  end
+end
+
+gasm = Gasm.new(GasmLoader.new(asm_desc).desc)
 asm = Asm.new(File.read(asm), gasm)
 
 puts asm.compiled

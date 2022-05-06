@@ -43,8 +43,6 @@ ld B, V1
 ld [I], V1
 ld V1, [I]
 
-; one of the weird things is if you want to use registers above V9 you need to say V10 instead of Va
+; use chip8.gasm.rb to allow this
 
-ld V10, V1
-
-; maybe i should make a generator that generates input friendly to gasm in this way...?
+ld VA, V1
