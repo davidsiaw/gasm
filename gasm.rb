@@ -125,7 +125,8 @@ class Gasm
     
     # write down a byte breakdown in both dec and hex
     comment_line = toks.map{|x| x.tr('.', '0').to_i(2).to_s.ljust(11)}.join('')
-    comment_line2 = toks.map{|x| ("0x" + x.tr('.', '0').to_i(2).to_s(16)).ljust(11)}.join('')
+    comment_line2 = toks.map{|x| ("0x" + x.tr('.', '0').to_i(2).to_s(16).rjust(2, '0')).ljust(11)}.join('')
+    comment_line3 = toks.map{|x| ("0o" + x.tr('.', '0').to_i(2).to_s(8).rjust(3, '0')).ljust(11)}.join('')
 
     # generate the line that actually creates the bits
     command_line = toks.map{|x| "<#{x}>"}.join(' ')
@@ -134,6 +135,7 @@ class Gasm
       "--",
       " d " + comment_line,
       " h " + comment_line2,
+      " o " + comment_line3,
       "; " + command_line
     ].join("\n")
   end
