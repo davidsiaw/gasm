@@ -1,7 +1,5 @@
 asm do
   instructions do
-    op "nop", "1000 0000 0000 0000"
-
     # Generate matchers for hex values for register
     def vp(pattern, bits)
       if pattern.include?('V<x>')
@@ -38,8 +36,8 @@ asm do
     vp "skp V<x>"            , "1110 xxxx 1001 1110" # SKP Vx
     vp "drw V<x>, V<y>, <n>" , "1101 xxxx yyyy nnnn" # DRW Vx, Vy, n
     vp "rnd V<x>, <k>"       , "1100 xxxx kkkk kkkk" # RND Vx, k; rnd Vx & k
-    vp "jp V0, <n>"          , "1011 nnnn nnnn nnnn" # JP V0, n; jump n + V0
-    vp "ld I, <n>"           , "1010 nnnn nnnn nnnn" # LD I, n
+    op "jp V0, <n>"          , "1011 nnnn nnnn nnnn" # JP V0, n; jump n + V0
+    op "ld I, <n>"           , "1010 nnnn nnnn nnnn" # LD I, n
     vp "sne V<x>, V<y>"      , "1001 xxxx yyyy 0000" # SNE Vx, Vy
 
     vp "shl V<x>"            , "1000 xxxx yyyy 1110" # SHL Vx
@@ -57,9 +55,12 @@ asm do
     vp "se V<x>, V<y>"       , "0101 xxxx yyyy 0000" # SE Vx, Vy
     vp "sne V<x>, <k>"       , "0100 xxxx kkkk kkkk" # SNE Vx, k
     vp "se V<x>, <k>"        , "0011 xxxx kkkk kkkk" # SE Vx, k
-    vp "call <n>"            , "0010 nnnn nnnn nnnn"
-    vp "jp <n>"              , "0001 nnnn nnnn nnnn"
-    vp "ret"                 , "0000 0000 1110 1110"
-    vp "cls"                 , "0000 0000 1110 0000"
+    
+    op "call <n>"            , "0010 nnnn nnnn nnnn"
+    op "jp <n>"              , "0001 nnnn nnnn nnnn"
+    op "ret"                 , "0000 0000 1110 1110"
+    op "cls"                 , "0000 0000 1110 0000"
+
+    op "nop"                 , "1000 0000 0000 0000" # made up. basically LD V0, V0
   end
 end

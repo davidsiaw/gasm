@@ -8,6 +8,7 @@ class Gasm
     @desc = desc
   end
 
+  NUMCHARS = %[0 1 2 3 4 5 6 7 8 9 a b c d e f o x]
   def parse(line)
     result = ''
     values = {}
@@ -22,6 +23,7 @@ class Gasm
 
       values = {}
       k.split('').each do |chr|
+        #p chr
         if state == 'VAR'
           if chr.ord >= 'a'.ord && chr.ord <= 'z'.ord
             varname = chr
@@ -35,7 +37,7 @@ class Gasm
             state = 'CHR'
             value = ''
             loop do
-              break if line[idx].nil? || line[idx] == ',' || line[idx] == ' '
+              break if line[idx].nil? || !NUMCHARS.include?(line[idx])
               value += line[idx]
               idx += 1
             end
@@ -65,7 +67,7 @@ class Gasm
     end
 
     if line[idx] != nil
-      throw "unknown instruction #{line}"
+      throw "unknown instruction [#{idx}]: #{line}"
     end
 
     # convert values to ints

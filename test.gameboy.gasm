@@ -1,0 +1,60 @@
+ld A, 0x55
+ld A, A
+ld B, B
+ld D, C
+ld (HL), A
+ld BC, 0xaa
+ld SP, HL
+ld HL, SP + 1
+ld (1), SP
+push AF
+push HL
+pop HL
+add A, L
+add A, 0x55
+adc A, D
+adc A, 0xaa
+sub A, B
+sub A, 0x55
+sbc A, D
+sbc A, 0x55
+and A, E
+and A, 0xaa
+or A, B
+or A, 0x55
+xor A, C
+xor A, 0x55
+cp A, (HL)
+cp A, 0xaa
+inc A
+inc H
+dec B
+dec (HL)
+add HL, BC
+add SP, 0xaa
+inc BC
+dec DE
+swap H
+daa
+cpl
+ccf
+scf
+di
+ei
+rlca
+rla
+rrca
+rra
+rr A
+bit 0, B
+bit 2, C
+swap A
+srl H
+jp 0xaa
+jp NC, 0xaa
+jr C, 0xaa
+call C, 0xaa
+rst $30
+ret
+ret NZ
+reti
