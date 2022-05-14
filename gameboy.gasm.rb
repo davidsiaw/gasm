@@ -21,11 +21,12 @@ asm do
       op name, hex.to_s(2).rjust(8, '0')
     end
 
-
+    # reset to position
     %w[00 08 10 18 20 28 30 38].each do |pos|
       op "rst $#{pos}", "11 #{(pos.to_i(16)+7).to_s(2)}"
     end
 
+    # conditional jumps
     %w[NZ Z NC C].each_with_index do |cond, i|
       op "jp #{cond}, <n>",   "110 #{dbit(i)} 010 nnnn nnnn nnnn nnnn"
       op "jr #{cond}, <n>",   "001 #{dbit(i)} 000 nnnn nnnn"
@@ -33,17 +34,20 @@ asm do
       op "ret #{cond}",       "110 #{dbit(i)} 000"
     end
 
+    # jumps
     op "jp (HL)",  "1110 1001"
     op "jp <n>",   "1100 0011 nnnn nnnn nnnn nnnn"
     op "jr <n>",   "0001 1000 nnnn nnnn"
     op "call <n>", "1100 1101 nnnn nnnn nnnn nnnn"
   
+    # shift and rotates
     %w[rlc rrc rl rr sla sra swap srl].each_with_index do |oper, opidx|
       TARGETS.each_with_index do |reg, i|
         op "#{oper} #{reg}"          , "#{CB} 00 #{tbit(opidx)} #{tbit(i)}"
       end
     end
 
+    # bit twiddling
     TARGETS.each_with_index do |reg, i|
       op "bit <b>, #{reg}"          , "#{CB} 01 bbb #{tbit(i)}"
       op "res <b>, #{reg}"          , "#{CB} 10 bbb #{tbit(i)}"
@@ -52,6 +56,7 @@ asm do
 
     op "stop", "0001 0000 0000 0000"
 
+    # misc instructions
     hexop "daa", 0x27
     hexop "cpl", 0x2f
     hexop "ccf", 0x3f

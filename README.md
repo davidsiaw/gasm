@@ -66,7 +66,8 @@ ruby gasm.rb simple.gasm.yml example.simple.gasm
 Supported number formats are:
 
 - decimal: `123`
-- hexadecimal: `0xab`
+- hexadecimal: `0xab` or `$af`
+- binary: `0b00010010` or `%00010110`
 
 ## Comments
 

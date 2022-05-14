@@ -53,7 +53,7 @@ srl H
 jp 0xaa
 jp NC, 0xaa
 jr C, 0xaa
-call C, 0xaa
+call C, $aa
 rst $30
 ret
 ret NZ

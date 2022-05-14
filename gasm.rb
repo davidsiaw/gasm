@@ -8,7 +8,7 @@ class Gasm
     @desc = desc
   end
 
-  NUMCHARS = %[0 1 2 3 4 5 6 7 8 9 a b c d e f o x]
+  NUMCHARS = %[0 1 2 3 4 5 6 7 8 9 a b c d e f o x b $ %]
   def parse(line)
     result = ''
     values = {}
@@ -75,6 +75,12 @@ class Gasm
       int = 0
       if v.start_with?('0x')
         int = v[2..-1].to_i(16).to_s(2)
+      elsif v.start_with?('$')
+        int = v[1..-1].to_i(16).to_s(2)
+      elsif v.start_with?('0b')
+        int = v[2..-1].to_i(2).to_s(2)
+      elsif v.start_with?('%')
+        int = v[1..-1].to_i(2).to_s(2)
       elsif v.to_i.to_s == v
         int = v.to_i.to_s(2)
       else
