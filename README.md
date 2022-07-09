@@ -4,8 +4,16 @@ gasm
 gasm is an assembler generator. It takes two parameters:
 
 ```
-gasm <assembly_name.gasm.yml> <program.assembly_name.gasm>
+ruby gasm.rb <assembly_name.gasm.yml> <program.assembly_name.gasm>
 ```
+
+You can also pipe a gasm file in via STDIN by going:
+
+```
+ruby gasm.rb <assembly_name.gasm.yml> -
+```
+
+Since the hyphen `-` signals that the input will come from standard input.
 
 Example
 -------
@@ -18,17 +26,36 @@ asm:
   instructions:
     load a1, <x>: 0011xxxx
     load <x>    : 0001xxxx
-    nop         : 10000000
+    nop         : '10000000' # yaml would misinterpret this as a number so its quoted
 ```
 
-then you can write a gasm file
+then you can write a gasm file:
 
 ```
+; simple_prog.mycpu.gasm
 load a1, 1
 nop
 ```
 
-and it will generate a file that can be turned into binary using `bsm2`
+This would be the output of `ruby gasm.rb mycpu.gasm.yml simple_prog.mycpu.gasm`:
+
+```
+load a1, 1
+--
+ d 49         
+ h 0x31       
+ o 0o061      
+; <0011...1>
+
+nop
+--
+ d 128        
+ h 0x80       
+ o 0o200      
+; <10000000>
+```
+
+the output is a file that can be turned into binary using `bsm2`. https://github.com/davidsiaw/bsm2
 
 ```bash
 $ bsm2 < ruby gasm.rb mycpu.gasm.yml simple_prog.mycpu.gasm > simple_prog.a.out
@@ -85,10 +112,15 @@ Supported number formats are:
 
 Start lines with a `;` to write comments
 
+Philosophy
+-----------
+
+When run with stdin mode you can see that it basically expands a file with a list of assembly instructions into a list of their bit representations.
+
+gasm does not have directives or anything, but it could be used by a higher level program that would accept directives, and offset numbers and then make use of gasm to do the low level transformation of instructions to bytes.
+
 TODO
 ----
 
 - maybe clean up somehow the state machine into something more readable
-- implement labels like `main:` and be able to use that name as a number referring to an offset (might need instruction to specify how big it is or infer)
-- implement common directives like `.start` or `.data` or to maybe say how far down the file it should be written??
 - maybe custom keywords for different sections ?
