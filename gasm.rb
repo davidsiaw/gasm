@@ -14,8 +14,8 @@ class Gasm
     values = {}
     idx = 0
 
-    @desc['asm']['instructions'].each do |k, v|
-      result = v
+    @desc['asm']['instructions'].each do |k, info|
+      result = info[:bits]
       idx = 0
 
       state = 'CHR'
@@ -63,6 +63,31 @@ class Gasm
         end
       end
 
+      # convert values to ints
+      values = values.map do |k, v|
+        int = 0
+        if v.start_with?('0x')
+          int = v[2..-1].to_i(16).to_s(2)
+        elsif v.start_with?('$')
+          int = v[1..-1].to_i(16).to_s(2)
+        elsif v.start_with?('0b')
+          int = v[2..-1].to_i(2).to_s(2)
+        elsif v.start_with?('%')
+          int = v[1..-1].to_i(2).to_s(2)
+        elsif v.to_i.to_s == v
+          int = v.to_i.to_s(2)
+        else
+          throw "don't know how to parse number '#{v}'"
+        end
+        [k, int]
+      end.to_h
+
+      next if result.nil?
+
+      unless info[:condition].call(values.map{|k,v| [k.to_sym, v.to_i]}.to_h)
+        result = nil
+      end
+
       break unless result.nil?
     end
 
@@ -70,28 +95,11 @@ class Gasm
       throw "unknown instruction [#{idx}]: #{line}"
     end
 
-    # convert values to ints
-    values = values.map do |k, v|
-      int = 0
-      if v.start_with?('0x')
-        int = v[2..-1].to_i(16).to_s(2)
-      elsif v.start_with?('$')
-        int = v[1..-1].to_i(16).to_s(2)
-      elsif v.start_with?('0b')
-        int = v[2..-1].to_i(2).to_s(2)
-      elsif v.start_with?('%')
-        int = v[1..-1].to_i(2).to_s(2)
-      elsif v.to_i.to_s == v
-        int = v.to_i.to_s(2)
-      else
-        throw "don't know how to parse number '#{v}'"
-      end
-      [k, int]
-    end.to_h
 
     if result.nil?
       throw "unknown instruction '#{line}'"
     end
+    
 
     # fill in result
     result = result.to_s.gsub(/\s+/, '')
@@ -181,14 +189,20 @@ class OpSection
     @ops = ops
   end
 
-  def op(pattern, bits)
-    @ops[pattern] = bits
+  def op(pattern, bits, &block)
+    info = {
+      bits: bits,
+      condition: lambda { |x| true }
+    }
+    info[:condition] = lambda { |x| block.call(x) } if block
+
+    @ops << [pattern, info]
   end
 end
 
 class InstructionsSection
   def initialize
-    @ops = {}
+    @ops = []
   end
 
   def inst
