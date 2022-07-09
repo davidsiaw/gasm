@@ -1,2 +1,8 @@
-ora 5
+and (5,X)
+ora 6
+and #7
 ora $abcd
+and $00ee
+ora (5),Y
+ora $beef,Y
+and $dead,X

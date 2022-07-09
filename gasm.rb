@@ -1,7 +1,7 @@
 require 'yaml'
 
 asm_desc = ARGV[0]
-asm = ARGV[1]
+asm_file = ARGV[1]
 
 class Gasm
   def initialize(desc)
@@ -63,6 +63,12 @@ class Gasm
         end
       end
 
+      # parsing was not complete, so its not this one
+      if line[idx] != nil
+        result = nil
+      end
+
+      #p result, values, line, k
       # convert values to ints
       values = values.map do |k, v|
         int = 0
@@ -77,24 +83,23 @@ class Gasm
         elsif v.to_i.to_s == v
           int = v.to_i.to_s(2)
         else
-          throw "don't know how to parse number '#{v}'"
+          # we encounter a non-number or some symbol that makes no sense
+          # this might not be the instruction we want.
+          result = nil
+          break
         end
         [k, int]
       end.to_h
 
       next if result.nil?
 
-      unless info[:condition].call(values.map{|k,v| [k.to_sym, v.to_i]}.to_h)
+      # check the custom condition tagged on the opcode
+      unless info[:condition].call(values.map{|k,v| [k.to_sym, v.to_i(2)]}.to_h)
         result = nil
       end
 
       break unless result.nil?
     end
-
-    if line[idx] != nil
-      throw "unknown instruction [#{idx}]: #{line}"
-    end
-
 
     if result.nil?
       throw "unknown instruction '#{line}'"
@@ -249,7 +254,36 @@ class GasmLoader
   end
 end
 
-gasm = Gasm.new(GasmLoader.new(asm_desc).desc)
-asm = Asm.new(File.read(asm), gasm)
+if asm_desc.nil? || asm_file.nil?
+  puts "USAGE: ruby gasm.rb <GASMFILE> <ASMFILE>"
+  puts "GASMFILE can be a YML or Ruby file that is a GASM description."
+  puts "ASMFILE is any text file that contains a series of assembly instructions separated"
+  puts "  by newlines. You can also just write a dash and it will attempt to read from STDIN"
+  exit(1)
+end
+
+if !File.exist?(asm_desc)
+  puts "'#{asm_desc}' GASM file does not exist"
+  exit(1)
+end
+
+begin
+  gasm = Gasm.new(GasmLoader.new(asm_desc).desc)
+rescue => e
+  puts "Maybe invalid GASM file: #{e.message}"
+  exit(1)
+end
+
+asm = if asm_file == '-'
+        asm = Asm.new(STDIN.read, gasm)
+
+      elsif
+        if !File.exist?(asm_file)
+          puts "'#{asm_file}' asm does not exist"
+          exit(1)
+        end
+
+        asm = Asm.new(File.read(asm_file), gasm)
+      end
 
 puts asm.compiled
