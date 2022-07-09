@@ -7,3 +7,4 @@ load a1, 5
 ins 1, 2
 nop
 biginstr 0xbeef, 6, 7
+biginstrbig 0xdead, 8, 10

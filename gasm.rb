@@ -113,6 +113,8 @@ class Gasm
 
     lastvar = ' '
     output = ''
+
+    evalues = endiannize(values)
     loop do
 
       if result[idx] == lastvar
@@ -121,8 +123,8 @@ class Gasm
         varidx = 0
       end
 
-      if values.key? result[idx]
-        output = (values[result[idx]][-1 - varidx] || '.') + output
+      if evalues.key? result[idx]
+        output = (evalues[result[idx]][-1 - varidx] || '.') + output
         lastvar = result[idx]
       else
         lastvar = ' '
@@ -130,7 +132,7 @@ class Gasm
         output = result[idx] + output
       end
 
-      #puts "#{values}, #{lastvar} #{varidx}"
+      #puts "#{evalues}, #{lastvar} #{varidx}"
 
       idx -= 1
       break if idx < 0
@@ -159,6 +161,25 @@ class Gasm
       " o " + comment_line3,
       "; " + command_line
     ].join("\n")
+  end
+
+  def littleendian(bitstr)
+    # flips a bit string around to blocks of 8 little endian bytes
+    # 1. reverse the string
+    # 2. cut it into blocks of 8
+    # 3. reverse each block of 8
+    # 4. et voila
+    bitstr.split('').reverse.each_slice(8).map{|x| x.reverse}.flatten.join('')
+  end
+
+  def endiannize(values)
+    # transforms the values array into big and small endian versions
+    result = {}
+    values.each do |k,v|
+      result[k] = littleendian(v)
+      result[k.upcase] = v
+    end
+    result
   end
 end
 
@@ -248,9 +269,24 @@ class GasmLoader
   end
 
   def desc
-    return YAML.load_file(@filename) if @filename.end_with?('.yml')
+    return yamldesc if @filename.end_with?('.yml')
 
     rubydesc
+  end
+
+  def yamldesc
+    v = YAML.load_file(@filename)
+
+    newhash = {}
+    v['asm']['instructions'].each do |k, v|
+      newhash[k] = {
+        bits: v,
+        condition: Proc.new {|x| true}
+      }
+    end
+
+    v['asm']['instructions'] = newhash
+    v
   end
 end
 
@@ -275,15 +311,15 @@ rescue => e
 end
 
 asm = if asm_file == '-'
-        asm = Asm.new(STDIN.read, gasm)
+        Asm.new(STDIN.read, gasm)
 
-      elsif
+      else
         if !File.exist?(asm_file)
           puts "'#{asm_file}' asm does not exist"
           exit(1)
         end
 
-        asm = Asm.new(File.read(asm_file), gasm)
+        Asm.new(File.read(asm_file), gasm)
       end
 
 puts asm.compiled
