@@ -1,0 +1,77 @@
+#!/usr/bin/env ruby
+
+require 'gasm'
+
+include Gasm
+
+asm_desc = ARGV[0]
+asm_file = ARGV[1]
+
+basedir = File.join(
+  Gem.loaded_specs['gasm'].full_gem_path,
+  'data', 'gasm', 'cpus')
+
+if asm_desc == 'lscpu'
+  a = Dir[File.join(basedir, "*.gasm.rb")].map do |x|
+    x.sub!(basedir + '/', '')
+    x.sub!('.gasm.rb', '')
+    x
+  end
+
+  puts a.to_a
+
+  exit(0)
+end
+
+if asm_desc.nil? || asm_file.nil?
+  puts "USAGE: gasm <GASMFILE> <ASMFILE or ->"
+  puts "GASMFILE can be a YML or Ruby file that is a GASM description."
+  puts "ASMFILE is any text file that contains a series of assembly instructions separated"
+  puts "  by newlines. You can also just write a dash and it will attempt to read from STDIN"
+
+  puts "USAGE: gasm lscpu"
+  puts "Lists known CPUs. See below."
+
+  puts "USAGE: gasm -<CPUNAME> <ASMFILE or ->"
+  puts "Assembles a known CPU."
+  puts "Valid values of CPUNAME can be found using 'gasm lscpu'"
+  exit(1)
+end
+
+if asm_desc.start_with?('-')
+  descfile = File.join(basedir, "#{asm_desc[1..-1]}.gasm.rb")
+
+  if !File.exist?(descfile)
+    STDERR.puts "'#{descfile}' is not a known CPU."
+    exit(1)
+  end
+
+  asm_desc = descfile
+end
+
+if !File.exist?(asm_desc)
+  STDERR.puts "'#{asm_desc}' GASM file does not exist"
+  exit(1)
+end
+
+begin
+  matcher = Gasm::GasmMatcher.new(GasmLoader.new(asm_desc).desc)
+rescue => e
+  STDERR.puts "Maybe invalid GASM file: #{e.message}"
+  exit(1)
+end
+
+
+asm = if asm_file == '-'
+  Asm.new(STDIN.read, matcher)
+  
+else
+  if !File.exist?(asm_file)
+    STDERR.puts "'#{asm_file}' asm does not exist"
+    exit(1)
+  end
+  
+  Asm.new(File.read(asm_file), matcher)
+end
+
+puts asm.compiled

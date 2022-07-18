@@ -1,19 +1,41 @@
 gasm
 ----
 
-gasm is an assembler generator. It takes two parameters:
+General ASsembler Maker
+
+gasm is an assembler generator. Using this you can define your assembly language mnemonics using patterns and produce files that can be read by bsm2 and converted to binary files.
+
+Installation
+------------
 
 ```
-ruby gasm.rb <assembly_name.gasm.yml> <program.assembly_name.gasm>
+gem install gasm
+```
+
+Usage (Binary)
+--------------
+
+It takes two parameters:
+
+```
+gasm <assembly_name.gasm.yml> <program.assembly_name.gasm>
 ```
 
 You can also pipe a gasm file in via STDIN by going:
 
 ```
-ruby gasm.rb <assembly_name.gasm.yml> -
+gasm <assembly_name.gasm.yml> -
 ```
 
 Since the hyphen `-` signals that the input will come from standard input.
+
+gasm comes with some known CPUs.
+
+```
+gasm -6502 -
+```
+
+interprets the input as 6502 assembler and produces bsm
 
 Example
 -------
