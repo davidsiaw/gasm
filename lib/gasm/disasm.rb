@@ -15,7 +15,7 @@ module Gasm
         result << res[:instruction]
         break if index >= @contents.length
       rescue => e
-        result << "// -incomplete- disassembling stopped: #{e.message} at index 0x#{index.to_s(16)}"
+        result << "// -incomplete- disassembling stopped: #{e.message} at index 0x#{index.to_s(16)} '0x#{@contents[index].unpack('C')[0].to_s(16)}'"
         break
       end
       result.join("\n")
