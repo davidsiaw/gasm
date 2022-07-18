@@ -5,7 +5,7 @@ module Gasm
       @contents = contents
     end
 
-    def compiled
+    def output
       lines = @contents.split("\n")
       offset = 0
 

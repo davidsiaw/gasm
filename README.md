@@ -35,7 +35,17 @@ gasm comes with some known CPUs.
 gasm -6502 -
 ```
 
-interprets the input as 6502 assembler and produces bsm
+interprets the input as 6502 assembler and produces bsm.
+
+### Disassembler
+
+gasm can also be used in disassembler mode.
+
+```
+cat a.out | gasm -d -6502 -
+```
+
+where `a.out` is a binary file that contains some instructions.
 
 Example
 -------

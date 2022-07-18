@@ -4,6 +4,13 @@ require 'gasm'
 
 include Gasm
 
+disasm = false
+
+if ARGV[0] == '-d'
+  disasm = true
+  ARGV.shift
+end
+
 asm_desc = ARGV[0]
 asm_file = ARGV[1]
 
@@ -61,17 +68,28 @@ rescue => e
   exit(1)
 end
 
+reader = Asm
+
+# disassembly mode
+if disasm
+  STDERR.puts 'Disassembling...'
+  reader = Disasm
+else
+  STDERR.puts 'Assembling...'
+end
 
 asm = if asm_file == '-'
-  Asm.new(STDIN.read, matcher)
+  reader.new(STDIN.read, matcher)
   
 else
   if !File.exist?(asm_file)
-    STDERR.puts "'#{asm_file}' asm does not exist"
+    STDERR.puts "File '#{asm_file}' does not exist"
     exit(1)
   end
-  
-  Asm.new(File.read(asm_file), matcher)
+
+  file = File.open(asm_file, "rb")
+  contents = file.read
+  reader.new(contents, matcher)
 end
 
-puts asm.compiled
+puts asm.output

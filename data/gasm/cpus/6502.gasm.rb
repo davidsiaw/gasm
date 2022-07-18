@@ -10,7 +10,7 @@ asm do
       opcodes.each_with_index do |opcode, oi|
         addrmodes.each_with_index do |(pattern, zeropage, operands), ai|
           next if pattern.nil?
-          next if pattern == '___'
+          next if opcode.start_with? '__'
 
           a = oi.to_s(2).rjust(3, '0')
           b = ai.to_s(2).rjust(3, '0')

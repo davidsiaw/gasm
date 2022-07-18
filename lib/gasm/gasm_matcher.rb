@@ -11,6 +11,53 @@ module Gasm
     def strip_comment(line)
       line.split('//')[0]
     end
+
+    def disparse(contents, index)
+      match = nil
+
+      @desc['asm']['instructions'].each do |k, info|
+        bitpattern = info[:bits].tr(' ', '')
+        
+        vars = {}
+        match = [k, info, vars, bitpattern.length >> 3]
+        bitpattern.split('').each_with_index do |chr, i|
+          byte_index = (i >> 3) + index
+          bit_index = i % 8
+          
+          if byte_index >= contents.length
+            match = nil
+            next
+          end
+
+          contentbits = contents[byte_index].unpack("C")[0].to_s(2).rjust(8, '0')
+
+          c = contentbits[bit_index]
+          if chr == '0' || chr == '1'
+            if c != chr
+              match = nil
+              break
+            end
+          else
+            vars[chr] ||= ''
+            vars[chr] += c
+          end
+        end
+
+        break if match
+      end
+
+      raise 'unknown pattern' if match.nil?
+      
+      result = match[0]
+      match[2].each do |var, val|
+        result.gsub!("<#{var}>", "$#{val.to_i(2).to_s(16)}")
+      end
+
+      {
+        amountread: match[3],
+        instruction: result
+      }
+    end
     
     NUMCHARS = %[0 1 2 3 4 5 6 7 8 9 a b c d e f o x b $ %]
     def parse(line)

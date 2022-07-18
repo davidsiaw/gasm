@@ -3,7 +3,7 @@ asm do
     # Generate matchers for hex values for register
     def vp(pattern, bits)
       if pattern.include?('V<x>')
-        hex_letters = %w[a b c d e f A B C D E F]
+        hex_letters = %w[0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F]
         hex_letters.each do |register_x|
             pattern_a = pattern.gsub('V<x>', "V#{register_x}")
             bits_a = bits.gsub('xxxx', "#{register_x.to_i(16).to_s(2)}")
