@@ -8,8 +8,20 @@ class Gasm
     @desc = desc
   end
 
+  def strip_spaces(line)
+    line.sub(/([^%\$a-z0-9]) +/, '\1')
+  end
+
+  def strip_comment(line)
+    line.split('//')[0]
+  end
+
   NUMCHARS = %[0 1 2 3 4 5 6 7 8 9 a b c d e f o x b $ %]
   def parse(line)
+    line = strip_comment(line)
+    line = strip_spaces(line)
+    line = line.strip
+
     result = ''
     values = {}
     idx = 0
@@ -196,10 +208,15 @@ class Asm
     result = []
 
     lines.each do |line|
-      next if line.strip.start_with?(';') # Skip over comments
-      next if line.strip.length.zero? # Skip empty lines
+      line.strip!
+      next if line.length.zero? # Skip empty lines
 
-      parsed = @gasm.parse(line.strip)
+      if line.start_with?('//') # Skip over comments
+        result << line
+        next
+      end
+
+      parsed = @gasm.parse(line)
       result << line
       result << "#{parsed}\n" if parsed
     end

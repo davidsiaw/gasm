@@ -1,2 +1,43 @@
+// add with carry
+  // aa
+adc #$44
+adc $44
+adc $44, X
+adc $4400
+adc $4400, X // absolute X
+adc $4400, Y // absolute Y
+adc ($44, X) // indirect X
+adc ($44), Y // indirect Y
 
+// bit instruction
+bit $ab
 bit $abcd
+
+// branches
+bpl $cc // branch on plus
+bmi $cc // branch on minus
+bvc $cc // branch oVerflow clear
+bvs $cc // branch oVerflow set
+bcc $cc // branch carry clear
+bcs $cc // branch carry set
+bne $cc // branch not equal
+beq $cc // branch on equal
+
+// break
+brk
+
+// compare x register
+cpx #$44
+cpx $44
+cpx $4400
+
+// transfer A to X
+tax
+ldx A // same as tax
+
+// transfer X to A
+txa
+stx A // equal to txa
+
+// decrement X
+dex

@@ -1,5 +1,5 @@
-; not a real Chip8 program, but just to check that all the asm
-; is recognized correctly and the bits are generated correctly.
+// not a real Chip8 program, but just to check that all the asm
+// is recognized correctly and the bits are generated correctly.
 
 cls
 ret
@@ -43,6 +43,6 @@ ld B, V1
 ld [I], V1
 ld V1, [I]
 
-; use chip8.gasm.rb to allow this
+// use chip8.gasm.rb to allow this
 
 ld VA, V1

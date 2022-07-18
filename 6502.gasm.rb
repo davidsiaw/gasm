@@ -149,14 +149,14 @@ asm do
     hexop 'jmp (<n>)', 0x6c, 2
     hexop 'jsr <n>',   0x20, 2
 
-    hexop 'bpl',       0x10, 1
-    hexop 'bmi',       0x30, 1
-    hexop 'bvc',       0x50, 1
-    hexop 'bvs',       0x70, 1
+    hexop 'bpl <n>',   0x10, 1
+    hexop 'bmi <n>',   0x30, 1
+    hexop 'bvc <n>',   0x50, 1
+    hexop 'bvs <n>',   0x70, 1
 
-    hexop 'bcc',       0x90, 1
-    hexop 'bcs',       0xb0, 1
-    hexop 'bne',       0xd0, 1
-    hexop 'beq',       0xf0, 1
+    hexop 'bcc <n>',   0x90, 1
+    hexop 'bcs <n>',   0xb0, 1
+    hexop 'bne <n>',   0xd0, 1
+    hexop 'beq <n>',   0xf0, 1
   end
 end

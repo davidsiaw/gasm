@@ -32,7 +32,7 @@ asm:
 then you can write a gasm file:
 
 ```
-; simple_prog.mycpu.gasm
+// simple_prog.mycpu.gasm
 load a1, 1
 nop
 ```
@@ -110,7 +110,42 @@ Supported number formats are:
 
 ## Comments
 
-Start lines with a `;` to write comments
+Start lines with a `//` to write comments.
+
+```
+// this is a comment
+bit $abcd
+```
+
+Comments can be seen in the output. The result of the above is
+
+```
+// this is a comment
+bit $abcd
+--
+ d 44         205        171        
+ h 0x2c       0xcd       0xab       
+ o 0o054      0o315      0o253      
+; <00101100> <11001101> <10101011>
+```
+
+gasm also regards any double-slashes after valid statements to be the start of comments, and will ignore it for parsing
+
+```
+bit $abcd // things
+```
+
+will result in
+
+```
+bit $abcd // things
+--
+ d 44         205        171        
+ h 0x2c       0xcd       0xab       
+ o 0o054      0o315      0o253      
+; <00101100> <11001101> <10101011>
+```
+
 
 Philosophy
 -----------
