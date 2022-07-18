@@ -59,7 +59,7 @@ module Gasm
       }
     end
     
-    NUMCHARS = %[0 1 2 3 4 5 6 7 8 9 a b c d e f o x b $ %]
+    NUMCHARS = %[0 1 2 3 4 5 6 7 8 9 a b c d e f o x $ %]
     def parse(line)
       line = strip_comment(line)
       line = strip_spaces(line)
@@ -68,6 +68,7 @@ module Gasm
       result = ''
       values = {}
       idx = 0
+      pattern = ''
       
       @desc['asm']['instructions'].each do |k, info|
         result = info[:bits]
@@ -152,6 +153,8 @@ module Gasm
         unless info[:condition].call(values.map{|k,v| [k.to_sym, v.to_i(2)]}.to_h)
           result = nil
         end
+
+        pattern = info[:bits]
         
         break unless result.nil?
       end
@@ -168,7 +171,7 @@ module Gasm
       lastvar = ' '
       output = ''
       
-      evalues = endiannize(values)
+      evalues = endiannize(values, pattern)
       loop do
         
         if result[idx] == lastvar
@@ -217,20 +220,20 @@ module Gasm
       ].join("\n")
     end
     
-    def littleendian(bitstr)
+    def littleendian(bitstr, len)
       # flips a bit string around to blocks of 8 little endian bytes
       # 1. reverse the string
       # 2. cut it into blocks of 8
       # 3. reverse each block of 8
       # 4. et voila
-      bitstr.split('').reverse.each_slice(8).map{|x| x.reverse}.flatten.join('')
+      bitstr.rjust(len, '0').split('').reverse.each_slice(8).map{|x| x.reverse}.flatten.join('')
     end
     
-    def endiannize(values)
+    def endiannize(values, pattern)
       # transforms the values array into big and small endian versions
       result = {}
       values.each do |k,v|
-        result[k] = littleendian(v)
+        result[k] = littleendian(v, pattern.count(k))
         result[k.upcase] = v
       end
       result
